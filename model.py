@@ -66,38 +66,39 @@ print("Cleaning of the dataset is done....")
 # converting it to categorical variable
 # dividing the data into input and output
 print("Data preprocessing is started....")
-x = data['text']+" "+data['source']
+x = data['text']+" "+data['source']+" "+data['polarity']
 x = x.values
-y = data['decptive'].values
+y = data['deceptive']
 y = y.map({"deceptive":0,"truthful":1})
+y = y.values
 y = to_categorical(y)
 
-xtrain, xtest, ytrain, ytest = tts(x, y,test_size=0.2,stratify=y)
+xtrain, xtest, ytrain, ytest = tts(x, y,test_size=0.2,random_state=123,stratify=y)
 print(xtrain.shape,ytrain.shape)
 print(xtest.shape,ytest.shape)
 
 # converting to text to sequences
-tokenizer = Tokenizer(10000,lower=True,oov_token='UNK')
+tokenizer = Tokenizer(5000,lower=True,oov_token='UNK')
 tokenizer.fit_on_texts(xtrain)
 xtrain = tokenizer.texts_to_sequences(xtrain)
 xtest = tokenizer.texts_to_sequences(xtest)
 
-xtrain = pad_sequences(xtrain,maxlen=120,padding='post')
-xtest = pad_sequences(xtest,maxlen=120,padding='post')
+xtrain = pad_sequences(xtrain,maxlen=80,padding='post')
+xtest = pad_sequences(xtest,maxlen=80,padding='post')
 print("Data preprocessing is over....")
 
 
 # making the model
 print("Making the model....")
 model = Sequential()
-model.add(Embedding(10000,64,input_length=120))
+model.add(Embedding(5000,16,input_length=80))
 model.add(Dropout(0.5))
-model.add(Bidirectional(LSTM(64,return_sequences=True)))
-model.add(Bidirectional(LSTM(128)))
+model.add(Bidirectional(LSTM(16,return_sequences=True)))
+model.add(Bidirectional(LSTM(32)))
 model.add(Dropout(0.3))
-model.add(Dense(128))
+model.add(Dense(64))
 model.add(Dense(2,activation="softmax"))
-model.compile(optimizer='adam',loss='categorical_crossentropy',metrics=['accuracy'])
+model.compile(optimizer='adam',loss="categorical_crossentropy",metrics=["accuracy"])
 print("Model making done....")
 print(model.summary())
 
