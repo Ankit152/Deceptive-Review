@@ -73,7 +73,7 @@ y = y.map({"deceptive":0,"truthful":1})
 y = y.values
 y = to_categorical(y)
 
-xtrain, xtest, ytrain, ytest = tts(x, y,test_size=0.2,random_state=123,stratify=y)
+xtrain, xtest, ytrain, ytest = tts(x, y,test_size=0.3,random_state=123,stratify=y)
 print(xtrain.shape,ytrain.shape)
 print(xtest.shape,ytest.shape)
 
